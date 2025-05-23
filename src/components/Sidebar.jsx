@@ -1,7 +1,10 @@
 
+
 import { Chart } from 'chart.js'
 
 
+
+ RemoteKelompok8/Farel
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
@@ -21,6 +24,7 @@ const menuItems = [
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
+
   { name: 'Pelanggan', icon: <BarChart2 />, path: '/pelanggan' }
 
 ]
