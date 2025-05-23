@@ -1,10 +1,3 @@
-
-
-import { Chart } from 'chart.js'
-
-
-
- RemoteKelompok8/Farel
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
@@ -15,18 +8,15 @@ import {
   User,
   LogIn,
   UserPlus,
-  CarTaxiFront,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
-  { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
+  { name: 'Pelanggan', icon: <UserPlus />, path: '/pelanggan' },
+  { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
-
-  { name: 'Pelanggan', icon: <BarChart2 />, path: '/pelanggan' }
-
 ]
 
 const accountItems = [
