@@ -1,8 +1,7 @@
-<<<<<<< HEAD
+
 import { Chart } from 'chart.js'
-=======
-import { BsPeopleFill } from "react-icons/bs"; 
->>>>>>> RemoteKelompok8/Rian
+
+
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
@@ -22,7 +21,7 @@ const menuItems = [
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
-  { name: 'Pelanggan', icon: <BsPeopleFill />, path: '/pelanggan' }
+  { name: 'Pelanggan', icon: <BarChart2 />, path: '/pelanggan' }
 
 ]
 
