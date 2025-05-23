@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom"
 import MainLayout from "./components/MainLayout"
 import Dashboard from "./Pages/Dashboard"
 import Product from "./pages/Produk"
+import CustomerManagement from "./pages/CustomerManagement"
 
 function App() {
   return (
@@ -12,7 +13,11 @@ function App() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/produk" element={<Product />} />
-      </Route>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/Pelanggan" element={<CustomerManagement />}/>
+          </Route>
+        </Route>
     </Routes>
   );
 }
