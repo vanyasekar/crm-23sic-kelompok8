@@ -1,3 +1,4 @@
+
 import {
   LayoutDashboard,
   Users,         // untuk pelanggan
@@ -15,6 +16,7 @@ const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
+  { name: 'Penjualan', icon: <ShoppingCart />, path: '/penjualan' },
 ]
 
 const accountItems = [
