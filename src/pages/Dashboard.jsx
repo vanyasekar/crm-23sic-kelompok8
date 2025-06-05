@@ -11,6 +11,10 @@ import {
   Legend,
 } from 'chart.js'
 import { Bar, Line } from 'react-chartjs-2'
+import { Link } from 'react-router-dom'
+
+import Hero from "../components/Hero"
+import OrderForm from "../components/OrderForm"
 
 ChartJS.register(
   CategoryScale,
@@ -24,7 +28,6 @@ ChartJS.register(
 )
 
 const Dashboard = () => {
-  // Data summary cards
   const stats = [
     { label: "Pendapatan Hari Ini", value: "$53,000", percent: "+55%", color: "green" },
     { label: "Pengguna Hari Ini", value: "2,300", percent: "+3%", color: "blue" },
@@ -32,7 +35,12 @@ const Dashboard = () => {
     { label: "Penjualan", value: "$103,430", percent: "+5%", color: "purple" },
   ]
 
-  // Data untuk grafik Penjualan Bulanan (Bar Chart)
+  const layanan = [
+    { nama: "Color Care", slug: "color-care" },
+    { nama: "Green Clean", slug: "green-clean" },
+    { nama: "Antibacterial Guard", slug: "antibacterial-guard" }
+  ]
+
   const barData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
     datasets: [
@@ -52,7 +60,6 @@ const Dashboard = () => {
     },
   }
 
-  // Data untuk grafik Pertumbuhan Pelanggan (Line Chart)
   const lineData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
     datasets: [
@@ -77,29 +84,51 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="p-6 space-y-8">
-      {/* Statistik utama */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map(({ label, value, percent, color }) => (
-          <div key={label} className="bg-white rounded-xl shadow p-5">
-            <p className="text-sm text-gray-500">{label}</p>
-            <h2 className={`text-2xl font-bold text-${color}-600 flex items-center gap-2`}>
-              {value}
-              <span className={`text-xs font-semibold text-${color}-500`}>{percent}</span>
-            </h2>
-          </div>
-        ))}
+    <div className="space-y-12">
+      {/* Hero Section */}
+      <Hero />
+
+      {/* Statistik Ringkas */}
+      <div className="px-6 space-y-6 max-w-6xl mx-auto">
+        <h2 className="text-2xl font-bold text-gray-800">Statistik Hari Ini</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map(({ label, value, percent, color }) => (
+            <div key={label} className="bg-white rounded-xl shadow p-5">
+              <p className="text-sm text-gray-500">{label}</p>
+              <h2 className={`text-2xl font-bold text-${color}-600 flex items-center gap-2`}>
+                {value}
+                <span className={`text-xs font-semibold text-${color}-500`}>{percent}</span>
+              </h2>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Grafik Penjualan Bulanan */}
-      <div className="bg-white rounded-xl shadow p-6">
-        <Bar options={barOptions} data={barData} />
+      {/* Grafik */}
+      <div className="px-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+        <div className="bg-white rounded-xl shadow p-6">
+          <Bar options={barOptions} data={barData} />
+        </div>
+        <div className="bg-white rounded-xl shadow p-6">
+          <Line options={lineOptions} data={lineData} />
+        </div>
       </div>
 
-      {/* Grafik Pertumbuhan Pelanggan */}
-      <div className="bg-white rounded-xl shadow p-6">
-        <Line options={lineOptions} data={lineData} />
-      </div>
+      {/* Layanan Kami */}
+      <section className="py-12 px-6 max-w-6xl mx-auto">
+        <h2 className="text-3xl font-semibold text-center text-blue-800 mb-8">Layanan Kami</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {layanan.map((item, i) => (
+            <Link to={`/produk/${item.slug}`} key={i} className="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-lg transition">
+              <h3 className="text-xl font-bold text-blue-700 mb-2">{item.nama}</h3>
+              <p className="text-sm text-gray-600">Klik untuk lihat detail layanan {item.nama.toLowerCase()}...</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Form Pemesanan */}
+      <OrderForm />
     </div>
   )
 }
