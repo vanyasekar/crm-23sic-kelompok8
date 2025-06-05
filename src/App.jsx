@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard"
 import SalesManagement from "./pages/SalesManagement"
 import Product from "./pages/Produk";
 import CustomerManagement from "./pages/CustomerManagement";
+import Delivery from "./pages//Delivery";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/produk" element={<Product />} />
           <Route path="/Pelanggan" element={<CustomerManagement />} />
           <Route path="/penjualan" element={<SalesManagement />} />
+          <Route path="/Delivery" element={<SalesManagement />} />
         
       </Route>
 
