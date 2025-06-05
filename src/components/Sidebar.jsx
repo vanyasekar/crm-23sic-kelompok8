@@ -1,13 +1,11 @@
 import {
   LayoutDashboard,
-  Users,         // untuk pelanggan
-  ShoppingCart,  // untuk penjualan
+  ShoppingCart,  // untuk delivery
   Box,           // untuk produk
   BarChart2,     // untuk laporan
   Settings,      // untuk pengaturan akun
-  User,
-  LogIn,
-  UserPlus,
+  LogIn,         // untuk sign in
+  UserPlus       // untuk sign up
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -15,13 +13,13 @@ const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
   { name: 'Produk', icon: <Box />, path: '/produk' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
-  { name: 'Delivery', icon: <ShoppingCart />, path: '/Delivery' },
+  { name: 'Delivery', icon: <ShoppingCart />, path: '/delivery' }
 ]
 
 const accountItems = [
   { name: 'Pengaturan Akun', icon: <Settings />, path: '/akun' },
   { name: 'Sign In', icon: <LogIn />, path: '/signin' },
-  { name: 'Sign Up', icon: <UserPlus />, path: '/signup' },
+  { name: 'Sign Up', icon: <UserPlus />, path: '/signup' }
 ]
 
 const Sidebar = () => {
@@ -32,6 +30,8 @@ const Sidebar = () => {
   return (
     <aside className="bg-white w-64 h-screen shadow-lg px-4 py-6 hidden md:block">
       <div className="text-xl font-bold mb-8 text-purple-700">UMKM CRM</div>
+
+      {/* Menu Utama */}
       <nav className="space-y-1">
         {menuItems.map((item) => (
           <Link
@@ -49,6 +49,7 @@ const Sidebar = () => {
         ))}
       </nav>
 
+      {/* Akun */}
       <div className="mt-8 text-xs font-semibold text-gray-500">AKUN</div>
       <nav className="mt-2 space-y-1">
         {accountItems.map((item) => (
