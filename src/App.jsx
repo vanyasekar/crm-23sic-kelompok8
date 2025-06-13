@@ -1,54 +1,66 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route } from "react-router-dom";
 
-import MainLayout from "./components/MainLayout"
-import Dashboard from "./pages/Dashboard"
-import Login from "./pages/Login"
-import Unauthorized from "./pages/401"
+import UserLayout from "./components/MainLayout";
+import AdminLayout from "./components/AdminLayout";
+import RequireAuth from "./components/RequireAuth";
 
-import Product from "./pages/Produk"
-import ProductAntibacterial from "./pages/ProdukAntibacterial"
-import ProductColor from "./pages/ProdukColor"
-import ProductGreen from "./pages/ProdukGreen"
+import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Unauthorized from "./pages/401";
 
-import SalesManagement from "./pages/SalesManagement"
-import CustomerManagement from "./pages/CustomerManagement"
-import Delivery from "./pages/Delivery"
-import EstimatePage from "./pages/EstimatePage"
-import StatusLaundry from "./pages/StatusLaundry"
-import JadwalPenjemputan from "./pages/JadwalPenjemputan"
+import Product from "./pages/Produk";
+import ProductAntibacterial from "./pages/ProdukAntibacterial";
+import ProductColor from "./pages/ProdukColor";
+import ProductGreen from "./pages/ProdukGreen";
+
+import SalesManagement from "./pages/SalesManagement";
+import CustomerManagement from "./pages/CustomerManagement";
+import Delivery from "./pages/Delivery";
 
 function App() {
   return (
     <Routes>
-      {/* Layout utama untuk semua halaman setelah login */}
-      <Route element={<MainLayout />}>
-        {/* Halaman tidak punya akses */}
-        <Route path="/401" element={<Unauthorized />} />
+      {/* Login & Signup */}
+      <Route path="/" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-        {/* Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
+      {/* Unauthorized */}
+      <Route path="/401" element={<Unauthorized />} />
 
-        {/* Produk & Subproduk */}
-        <Route path="/produk" element={<Product />} />
-        <Route path="/produk/antibacterial-guard" element={<ProductAntibacterial />} />
-        <Route path="/produk/color-care" element={<ProductColor />} />
-        <Route path="/produk/green-clean" element={<ProductGreen />} />
-
-        {/* Manajemen Penjualan & Pelanggan */}
-        <Route path="/penjualan" element={<SalesManagement />} />
-        <Route path="/pelanggan" element={<CustomerManagement />} />
-        <Route path="/estimasi" element={<EstimatePage/> } />
-        <Route path="/pelanggan/jadwal-penjemputan" element={<JadwalPenjemputan/>} />,
-
-        {/* Pengantaran */}
-        <Route path="/delivery" element={<Delivery />} />
-        <Route path="pelanggan/status" element={<StatusLaundry/>} />
+      {/* User Layout with Protected Routes */}
+      <Route
+        path="/"
+        element={
+          <RequireAuth role="user">
+            <UserLayout />
+          </RequireAuth>
+        }
+      >
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="produk" element={<Product />} />
+        <Route path="produk/antibacterial-guard" element={<ProductAntibacterial />} />
+        <Route path="produk/color-care" element={<ProductColor />} />
+        <Route path="produk/green-clean" element={<ProductGreen />} />
+        <Route path="penjualan" element={<SalesManagement />} />
+        <Route path="pelanggan" element={<CustomerManagement />} />
+        <Route path="delivery" element={<Delivery />} />
       </Route>
 
-      {/* Login (tanpa layout) */}
-      <Route path="/" element={<Login />} />
+      {/* Admin Layout with Protected Route */}
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth role="admin">
+            <AdminLayout />
+          </RequireAuth>
+        }
+      >
+        <Route path="dashboard" element={<AdminDashboard />} />
+      </Route>
     </Routes>
-  )
+  );
 }
 
-export default App
+export default App;
