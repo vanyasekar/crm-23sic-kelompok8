@@ -13,6 +13,9 @@ import ProductGreen from "./pages/ProdukGreen"
 import SalesManagement from "./pages/SalesManagement"
 import CustomerManagement from "./pages/CustomerManagement"
 import Delivery from "./pages/Delivery"
+import EstimatePage from "./pages/EstimatePage"
+import StatusLaundry from "./pages/StatusLaundry"
+import JadwalPenjemputan from "./pages/JadwalPenjemputan"
 
 function App() {
   return (
@@ -34,9 +37,12 @@ function App() {
         {/* Manajemen Penjualan & Pelanggan */}
         <Route path="/penjualan" element={<SalesManagement />} />
         <Route path="/pelanggan" element={<CustomerManagement />} />
+        <Route path="/estimasi" element={<EstimatePage/> } />
+        <Route path="/pelanggan/jadwal-penjemputan" element={<JadwalPenjemputan/>} />,
 
         {/* Pengantaran */}
         <Route path="/delivery" element={<Delivery />} />
+        <Route path="pelanggan/status" element={<StatusLaundry/>} />
       </Route>
 
       {/* Login (tanpa layout) */}
