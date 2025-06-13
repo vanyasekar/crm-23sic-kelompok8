@@ -10,7 +10,7 @@ import {
   LogIn,
   UserPlus,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -21,10 +21,11 @@ const Sidebar = () => {
   const isActive = (path) => location.pathname === path
 
   const menuItems = [
-    { name: 'Dashboard', icon: <LayoutDashboard />, path: '/' },
+    { name: 'Dashboard', icon: <LayoutDashboard />, path: '/dashboard' },
     { name: 'Produk', icon: <Box />, path: '/produk' },
     { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
-    { name: 'Delivery', icon: <ShoppingCart />, path: '/delivery' }
+    { name: 'Delivery', icon: <ShoppingCart />, path: '/delivery' },
+    { name: 'Estimasi Harga', icon: <FiDollarSign />, path: '/estimasi' }
   ]
 
   const accountItems = [
@@ -54,7 +55,7 @@ const Sidebar = () => {
           </Link>
         ))}
 
-        {/* Dropdown Pelanggan */}
+        {/* Pelanggan Dropdown */}
         <div>
           <button
             onClick={() => setOpenSubmenu(!openSubmenu)}
@@ -125,4 +126,3 @@ const Sidebar = () => {
 }
 
 export default Sidebar
-
