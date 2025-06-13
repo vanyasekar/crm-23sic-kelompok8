@@ -22,7 +22,7 @@ const accountItems = [
   
 ]
 
-const Sidebar = () => {
+const SidebarAdmin = () => {
   const location = useLocation()
 
   const isActive = (path) => location.pathname === path
@@ -71,4 +71,4 @@ const Sidebar = () => {
   )
 }
 
-export default Sidebar
+export default SidebarAdmin
