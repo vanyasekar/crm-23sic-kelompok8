@@ -43,7 +43,7 @@ function formatLaundryPrice(num) {
   }).format(num);
 }
 
-export default function LaundryDelivery() {
+export default function Delivery() {
   const [deliveries, setDeliveries] = useState(initialLaundryDeliveries);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({

@@ -2,13 +2,13 @@ import { Routes, Route } from "react-router-dom";
 
 import UserLayout from "./components/MainLayout";
 import AdminLayout from "./components/AdminLayout";
-import RequireAuth from "./components/RequireAuth";
 
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Unauthorized from "./pages/401";
+import Forbidden from "./pages/Forbidden";
 
 import Product from "./pages/Produk";
 import ProductAntibacterial from "./pages/ProdukAntibacterial";
@@ -22,42 +22,27 @@ import Delivery from "./pages/Delivery";
 function App() {
   return (
     <Routes>
-      {/* Login & Signup */}
+      {/* Public Routes */}
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-
-      {/* Unauthorized */}
       <Route path="/401" element={<Unauthorized />} />
+      <Route path="/403" element={<Forbidden />} />
 
-      {/* User Layout with Protected Routes */}
-      <Route
-        path="/"
-        element={
-          <RequireAuth role="user">
-            <UserLayout />
-          </RequireAuth>
-        }
-      >
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="produk" element={<Product />} />
-        <Route path="produk/antibacterial-guard" element={<ProductAntibacterial />} />
-        <Route path="produk/color-care" element={<ProductColor />} />
-        <Route path="produk/green-clean" element={<ProductGreen />} />
-        <Route path="penjualan" element={<SalesManagement />} />
-        <Route path="pelanggan" element={<CustomerManagement />} />
-        <Route path="delivery" element={<Delivery />} />
+      {/* Routes with UserLayout */}
+      <Route element={<UserLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/produk" element={<Product />} />
+        <Route path="/produk/antibacterial-guard" element={<ProductAntibacterial />} />
+        <Route path="/produk/color-care" element={<ProductColor />} />
+        <Route path="/produk/green-clean" element={<ProductGreen />} />
+        <Route path="/penjualan" element={<SalesManagement />} />
+        <Route path="/pelanggan" element={<CustomerManagement />} />
+        <Route path="/delivery" element={<Delivery />} />
       </Route>
 
-      {/* Admin Layout with Protected Route */}
-      <Route
-        path="/admin"
-        element={
-          <RequireAuth role="admin">
-            <AdminLayout />
-          </RequireAuth>
-        }
-      >
-        <Route path="dashboard" element={<AdminDashboard />} />
+      {/* Routes with AdminLayout */}
+      <Route element={<AdminLayout />}>
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Route>
     </Routes>
   );
