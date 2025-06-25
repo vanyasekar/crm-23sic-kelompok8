@@ -1,35 +1,63 @@
 import React, { useState } from "react";
 
+// Data awal
 const initialCustomers = [
-  { id: 1, name: "Budi Santoso", email: "budi@mail.com", phone: "081234567890", active: true },
-  { id: 2, name: "Siti Aminah", email: "siti@mail.com", phone: "089876543210", active: false },
-  { id: 3, name: "Andi Wijaya", email: "andi@mail.com", phone: "081299988877", active: true },
+  {
+    id: 1,
+    name: "Budi Santoso",
+    address: "Jl. Merdeka No. 10",
+    phone: "081234567890",
+    transactions: [{ service: "Color care", date: "2025-06-01" }],
+  },
+  {
+    id: 2,
+    name: "Siti Aminah",
+    address: "Jl. Sudirman No. 25",
+    phone: "089876543210",
+    transactions: [{ service: "Antibacterial Guard", date: "2025-06-05" }],
+  },
 ];
 
 export default function CustomerManagement() {
   const [customers, setCustomers] = useState(initialCustomers);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", active: true });
+  const [formData, setFormData] = useState({
+    name: "",
+    address: "",
+    phone: "",
+    service: "",
+  });
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     }));
   };
 
   const handleAddCustomer = () => {
-    if (!formData.name || !formData.email || !formData.phone) {
+    const { name, address, phone, service } = formData;
+    if (!name || !address || !phone || !service) {
       alert("Semua field wajib diisi!");
       return;
     }
+
     const newCustomer = {
       id: customers.length + 1,
-      ...formData,
+      name,
+      address,
+      phone,
+      transactions: [
+        {
+          service,
+          date: new Date().toISOString().slice(0, 10), // format YYYY-MM-DD
+        },
+      ],
     };
+
     setCustomers([...customers, newCustomer]);
-    setFormData({ name: "", email: "", phone: "", active: true });
+    setFormData({ name: "", address: "", phone: "", service: "" });
     setShowForm(false);
   };
 
@@ -41,7 +69,7 @@ export default function CustomerManagement() {
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">Management Pelanggan</h1>
+      <h1 className="text-2xl font-semibold mb-4">Manajemen Pelanggan</h1>
 
       <button
         onClick={() => setShowForm((prev) => !prev)}
@@ -59,42 +87,45 @@ export default function CustomerManagement() {
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-3 py-2 border rounded"
               placeholder="Nama pelanggan"
             />
           </div>
           <div className="mb-2">
-            <label className="block font-medium mb-1">Email</label>
+            <label className="block font-medium mb-1">Alamat</label>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              name="address"
+              value={formData.address}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Email pelanggan"
+              className="w-full px-3 py-2 border rounded"
+              placeholder="Alamat pelanggan"
             />
           </div>
           <div className="mb-2">
-            <label className="block font-medium mb-1">Telepon</label>
+            <label className="block font-medium mb-1">No HP</label>
             <input
               type="text"
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Nomor telepon"
+              className="w-full px-3 py-2 border rounded"
+              placeholder="Nomor HP"
             />
           </div>
-          <div className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              name="active"
-              checked={formData.active}
+          <div className="mb-4">
+            <label className="block font-medium mb-1">Jenis Layanan</label>
+            <select
+              name="service"
+              value={formData.service}
               onChange={handleInputChange}
-              id="activeCheckbox"
-              className="mr-2"
-            />
-            <label htmlFor="activeCheckbox" className="font-medium">Aktif</label>
+              className="w-full px-3 py-2 border rounded"
+            >
+              <option value="">-- Pilih Layanan --</option>
+              <option value="Color care">Color care</option>
+              <option value="Green Clean">Green Clean</option>
+              <option value="Antibacterial Guard">Antibacterial Guard</option>
+            </select>
           </div>
           <button
             onClick={handleAddCustomer}
@@ -109,31 +140,27 @@ export default function CustomerManagement() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telepon</th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Alamat</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No HP</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Riwayat Transaksi</th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {customers.map((cust) => (
               <tr key={cust.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">{cust.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{cust.email}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{cust.address}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{cust.phone}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {cust.active ? (
-                    <span className="inline-flex px-2 text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Aktif
-                    </span>
-                  ) : (
-                    <span className="inline-flex px-2 text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                      Tidak Aktif
-                    </span>
-                  )}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <ul className="list-disc pl-5 text-sm text-gray-700">
+                    {cust.transactions.map((tx, idx) => (
+                      <li key={idx}>{tx.service} ({tx.date})</li>
+                    ))}
+                  </ul>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
+                <td className="px-6 py-4 text-center space-x-2">
                   <button
                     className="text-blue-600 hover:text-blue-900 font-semibold"
                     onClick={() => alert("Fitur Edit belum tersedia")}
