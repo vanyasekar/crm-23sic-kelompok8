@@ -88,31 +88,7 @@ const Dashboard = () => {
       {/* Hero Section */}
       <Hero />
 
-      {/* Statistik Ringkas */}
-      <div className="px-6 space-y-6 max-w-6xl mx-auto">
-        <h2 className="text-2xl font-bold text-gray-800">Statistik Hari Ini</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map(({ label, value, percent, color }) => (
-            <div key={label} className="bg-white rounded-xl shadow p-5">
-              <p className="text-sm text-gray-500">{label}</p>
-              <h2 className={`text-2xl font-bold text-${color}-600 flex items-center gap-2`}>
-                {value}
-                <span className={`text-xs font-semibold text-${color}-500`}>{percent}</span>
-              </h2>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Grafik */}
-      <div className="px-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-        <div className="bg-white rounded-xl shadow p-6">
-          <Bar options={barOptions} data={barData} />
-        </div>
-        <div className="bg-white rounded-xl shadow p-6">
-          <Line options={lineOptions} data={lineData} />
-        </div>
-      </div>
+      
 
       {/* Layanan Kami */}
       <section className="py-12 px-6 max-w-6xl mx-auto">

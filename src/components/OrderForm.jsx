@@ -1,23 +1,74 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../supabaseClient";
 
 export default function OrderForm() {
   const [form, setForm] = useState({
     nama: "",
     telepon: "",
     email: "",
-    layanan: "Wet Clean",
-    catatan: ""
+    alamat: "",
+    layanan: "",
+    catatan: "",
+    metode_pembayaran: "",
   });
+
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        setUserId(user.id);
+        setForm((prev) => ({
+          ...prev,
+          email: user.email || "",
+        }));
+      }
+    };
+
+    getUser();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Pesanan berhasil dikirim! (simulasi)");
-    console.log(form);
+
+    if (!userId) {
+      alert("Anda harus login terlebih dahulu.");
+      return;
+    }
+
+    const { error } = await supabase.from("orders").insert([
+      {
+        user_id: userId,
+        ...form,
+        status_pembayaran: "Belum dibayar",
+        total_harga: null,
+        created_at: new Date()
+      },
+    ]);
+
+    if (error) {
+      alert("Gagal mengirim pesanan: " + error.message);
+    } else {
+      alert("Pesanan berhasil dikirim!");
+      setForm({
+        nama: "",
+        telepon: "",
+        email: form.email,
+        alamat: "",
+        layanan: "",
+        catatan: "",
+        metode_pembayaran: "",
+      });
+    }
   };
 
   return (
@@ -34,7 +85,11 @@ export default function OrderForm() {
         </div>
         <div>
           <label className="block text-sm mb-1">Email</label>
-          <input type="email" name="email" value={form.email} onChange={handleChange} className="w-full px-4 py-2 border rounded" />
+          <input type="email" name="email" value={form.email} disabled className="w-full px-4 py-2 border rounded bg-gray-100" />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Alamat</label>
+          <input type="text" name="alamat" value={form.alamat} onChange={handleChange} required className="w-full px-4 py-2 border rounded" />
         </div>
         <div>
           <label className="block text-sm mb-1">Pilih Layanan</label>
@@ -42,6 +97,14 @@ export default function OrderForm() {
             <option>Color Care</option>
             <option>Green Dry Clean</option>
             <option>Antibacterial Guard</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Metode Pembayaran</label>
+          <select name="metode_pembayaran" value={form.metode_pembayaran} onChange={handleChange} className="w-full px-4 py-2 border rounded">
+            <option value="COD">COD (Bayar di Tempat)</option>
+            <option value="Transfer Bank">Transfer Bank</option>
+            <option value="QRIS">QRIS</option>
           </select>
         </div>
         <div>

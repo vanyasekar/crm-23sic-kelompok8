@@ -1,11 +1,9 @@
 import { Routes, Route } from "react-router-dom";
-
+//user
 import UserLayout from "./components/MainLayout";
-import AdminLayout from "./components/AdminLayout";
 import RequireAuth from "./components/RequireAuth";
 
 import Dashboard from "./pages/Dashboard";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Unauthorized from "./pages/401";
@@ -18,6 +16,11 @@ import ProductGreen from "./pages/ProdukGreen";
 import SalesManagement from "./pages/SalesManagement";
 import CustomerManagement from "./pages/CustomerManagement";
 import Delivery from "./pages/Delivery";
+
+//admin
+import AdminLayout from "./components/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminOrderAnalytics from "./pages/admin/AdminOrderAnalytics";
 
 function App() {
   return (
@@ -58,6 +61,7 @@ function App() {
         }
       >
         <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="pesanan" element={<AdminOrderAnalytics/>}/>
       </Route>
     </Routes>
   );

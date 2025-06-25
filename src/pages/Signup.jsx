@@ -1,21 +1,34 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 export default function Signup() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user"); // default role
 
-  function handleSignup(e) {
+  async function handleSignup(e) {
     e.preventDefault();
 
-    // Simpan user baru ke localStorage (simulasi)
-    const userData = { username, password, role };
-    localStorage.setItem("user", JSON.stringify(userData));
+    const { data, error } = await supabase.auth.signUp({
+      email: username,
+      password: password
+    });
 
-    alert("Akun berhasil dibuat! Silakan login.");
-    navigate("/");
+    if (error) {
+      alert("Gagal signup: " + error.message);
+      return;
+    }
+
+    const user = data.user;
+    if (user) {
+      await supabase.from("profiles").insert({
+        id: user.id,
+        role: "user",
+      });
+      alert("Akun berhasil dibuat. Silakan login.");
+      navigate("/");
+    }
   }
 
   return (
@@ -24,48 +37,29 @@ export default function Signup() {
         <h1 className="text-2xl font-bold mb-6 text-center">Daftar Akun</h1>
         <form onSubmit={handleSignup}>
           <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-              Username
+            <label className="block text-sm font-medium text-gray-700">
+              Email
             </label>
             <input
-              type="text"
-              id="username"
+              type="email"
+              className="mt-1 block w-full px-4 py-2 border rounded"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border rounded"
               required
             />
           </div>
-
           <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700">
               Password
             </label>
             <input
               type="password"
-              id="password"
+              className="mt-1 block w-full px-4 py-2 border rounded"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border rounded"
               required
             />
           </div>
-
-          <div className="mb-6">
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-              Daftar Sebagai
-            </label>
-            <select
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border rounded"
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-
           <button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -73,10 +67,6 @@ export default function Signup() {
             Daftar
           </button>
         </form>
-
-        <p className="text-sm text-center mt-4">
-          Sudah punya akun? <a href="/" className="text-blue-600 hover:underline">Login</a>
-        </p>
       </div>
     </div>
   );
