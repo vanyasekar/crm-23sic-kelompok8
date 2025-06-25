@@ -1,10 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-
+//user
 import UserLayout from "./components/MainLayout";
 import AdminLayout from "./components/AdminLayout";
+import RequireAuth from "./components/RequireAuth";
 
 import Dashboard from "./pages/Dashboard";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Unauthorized from "./pages/401";
@@ -18,6 +18,11 @@ import ProductGreen from "./pages/ProdukGreen";
 import SalesManagement from "./pages/SalesManagement";
 import CustomerManagement from "./pages/CustomerManagement";
 import Delivery from "./pages/Delivery";
+
+//admin
+import AdminLayout from "./components/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminOrderAnalytics from "./pages/admin/AdminOrderAnalytics";
 
 function App() {
   return (
@@ -40,9 +45,16 @@ function App() {
         <Route path="/delivery" element={<Delivery />} />
       </Route>
 
-      {/* Routes with AdminLayout */}
-      <Route element={<AdminLayout />}>
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      {/* Admin Layout with Protected Route */}
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth role="admin">
+            <AdminLayout />
+          </RequireAuth>
+        }
+      >
+        <Route path="dashboard" element={<AdminDashboard />} />
       </Route>
     </Routes>
   );

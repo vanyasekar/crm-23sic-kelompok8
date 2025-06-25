@@ -1,3 +1,4 @@
+import { GiClothes } from "react-icons/gi"; 
 import {
   LayoutDashboard,
   ShoppingCart,  // untuk delivery
@@ -5,13 +6,13 @@ import {
   BarChart2,     // untuk laporan
   Settings,      // untuk pengaturan akun
   LogIn,         // untuk sign in
-  UserPlus       // untuk sign up
+  
 } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
 const menuItems = [
-  { name: 'Dashboard', icon: <LayoutDashboard />, path: '/dashboard' },
-  { name: 'Produk', icon: <Box />, path: '/produk' },
+  { name: 'Dashboard', icon: <LayoutDashboard />, path: '/admin/dashboard' },
+  { name: 'Pesanan', icon: <GiClothes  />, path: '/admin/pesanan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
   { name: 'Delivery', icon: <ShoppingCart />, path: '/delivery' }
 ]
