@@ -1,12 +1,14 @@
 import { Routes, Route } from "react-router-dom";
 //user
 import UserLayout from "./components/MainLayout";
+import AdminLayout from "./components/AdminLayout";
 import RequireAuth from "./components/RequireAuth";
 
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Unauthorized from "./pages/401";
+import Forbidden from "./pages/Forbidden";
 
 import Product from "./pages/Produk";
 import ProductBioDetergency from "./pages/ProdukBioDetergency";
@@ -27,12 +29,11 @@ import AdminPesanan from "./pages/admin/AdminPesanan";
 function App() {
   return (
     <Routes>
-      {/* Login & Signup */}
+      {/* Public Routes */}
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-
-      {/* Unauthorized */}
       <Route path="/401" element={<Unauthorized />} />
+      <Route path="/403" element={<Forbidden />} />
 
       {/* User Layout with Protected Routes */}
       <Route

@@ -2,46 +2,99 @@ import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { Truck } from "lucide-react";
 
-export default function Delivery() {
-  const [orders, setOrders] = useState([]);
+export default function LaundryDelivery() {
+  const [deliveries, setDeliveries] = useState(initialLaundryDeliveries);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    orderNumber: `LND-${Math.floor(100 + Math.random() * 900)}`,
+    customerName: "",
+    phone: "",
+    address: "",
+    deliveryDate: new Date().toISOString().split('T')[0],
+    pickupTime: "09:00-12:00",
+    status: "Dalam Proses",
+    items: [{ name: "", service: "Cuci Setrika", quantity: 1, price: 0 }],
+    notes: ""
+  });
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+  // Handle perubahan form
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-      if (user) {
-        const { data, error } = await supabase
-          .from("orders")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
+  // Handle perubahan item laundry
+  const handleItemChange = (index, e) => {
+    const { name, value } = e.target;
+    const newItems = [...formData.items];
+    newItems[index] = { ...newItems[index], [name]: value };
+    setFormData(prev => ({ ...prev, items: newItems }));
+  };
 
-        if (error) {
-          console.error("Gagal ambil pesanan:", error.message);
-        } else {
-          setOrders(data);
-        }
-      }
+  // Tambah item laundry
+  const addLaundryItem = () => {
+    setFormData(prev => ({
+      ...prev,
+      items: [...prev.items, { name: "", service: "Cuci Setrika", quantity: 1, price: 0 }]
+    }));
+  };
+
+  // Hapus item laundry
+  const removeLaundryItem = (index) => {
+    const newItems = formData.items.filter((_, i) => i !== index);
+    setFormData(prev => ({ ...prev, items: newItems }));
+  };
+
+  // Hitung total harga
+  const calculateTotal = (items) => {
+    return items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  };
+
+  // Simpan data delivery
+  const handleSaveDelivery = () => {
+    if (!formData.customerName || !formData.phone || !formData.address) {
+      alert("Harap isi data pelanggan dengan lengkap");
+      return;
+    }
+
+    const newDelivery = {
+      ...formData,
+      id: deliveries.length + 1,
+      items: formData.items.filter(item => item.name && item.service)
     };
 
-    fetchOrders();
-  }, []);
+    setDeliveries([...deliveries, newDelivery]);
+    resetForm();
+    setShowForm(false);
+  };
 
-  const batalkanPesanan = async (id) => {
-    const { error } = await supabase
-      .from("orders")
-      .update({ status: "Batal" })
-      .eq("id", id);
+  // Reset form
+  const resetForm = () => {
+    setFormData({
+      orderNumber: `LND-${Math.floor(100 + Math.random() * 900)}`,
+      customerName: "",
+      phone: "",
+      address: "",
+      deliveryDate: new Date().toISOString().split('T')[0],
+      pickupTime: "09:00-12:00",
+      status: "Dalam Proses",
+      items: [{ name: "", service: "Cuci Setrika", quantity: 1, price: 0 }],
+      notes: ""
+    });
+  };
 
-    if (error) {
-      alert("Gagal membatalkan pesanan");
-    } else {
-      setOrders((prev) =>
-        prev.map((order) => (order.id === id ? { ...order, status: "Batal" } : order))
-      );
+  // Hapus delivery
+  const handleDeleteDelivery = (id) => {
+    if (window.confirm("Hapus data pengantaran ini?")) {
+      setDeliveries(deliveries.filter(d => d.id !== id));
     }
+  };
+
+  // Update status delivery
+  const handleUpdateStatus = (id, newStatus) => {
+    setDeliveries(deliveries.map(d => 
+      d.id === id ? { ...d, status: newStatus } : d
+    ));
   };
 
   return (
