@@ -9,18 +9,20 @@ import Signup from "./pages/Signup";
 import Unauthorized from "./pages/401";
 
 import Product from "./pages/Produk";
-import ProductAntibacterial from "./pages/ProdukAntibacterial";
+import ProductBioDetergency from "./pages/ProdukBioDetergency";
 import ProductColor from "./pages/ProdukColor";
-import ProductGreen from "./pages/ProdukGreen";
+import ProductStainRemoval from "./pages/ProdukStainRemoval";
+import ProductAntibacterial from "./pages/ProdukAntibacterial";
+import ProductBriteWhite from "./pages/ProdukBriteWhite";
 
-import SalesManagement from "./pages/SalesManagement";
-import CustomerManagement from "./pages/CustomerManagement";
+import FormPemesanan from "./pages/FormPemesanan";
 import Delivery from "./pages/Delivery";
 
 //admin
 import AdminLayout from "./components/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrderAnalytics from "./pages/admin/AdminOrderAnalytics";
+import AdminPesanan from "./pages/admin/AdminPesanan";
 
 function App() {
   return (
@@ -43,11 +45,12 @@ function App() {
       >
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="produk" element={<Product />} />
-        <Route path="produk/antibacterial-guard" element={<ProductAntibacterial />} />
+        <Route path="produk/bio-detergency" element={<ProductBioDetergency />} />
         <Route path="produk/color-care" element={<ProductColor />} />
-        <Route path="produk/green-clean" element={<ProductGreen />} />
-        <Route path="penjualan" element={<SalesManagement />} />
-        <Route path="pelanggan" element={<CustomerManagement />} />
+        <Route path="produk/stain-removal" element={<ProductStainRemoval />} />
+        <Route path="produk/antibacterial-guard" element={<ProductAntibacterial />} />
+        <Route path="produk/brite-white" element={<ProductBriteWhite />} />
+        <Route path="form" element={<FormPemesanan />} />
         <Route path="delivery" element={<Delivery />} />
       </Route>
 
@@ -61,7 +64,8 @@ function App() {
         }
       >
         <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="pesanan" element={<AdminOrderAnalytics/>}/>
+        <Route path="laporan" element={<AdminOrderAnalytics/>}/>
+        <Route path="pesanan" element={<AdminPesanan/>}/>
       </Route>
     </Routes>
   );

@@ -15,6 +15,8 @@ import { Link } from 'react-router-dom'
 
 import Hero from "../components/Hero"
 import OrderForm from "../components/OrderForm"
+import LayananRekomendasi from '../components/LayananRekomendasi'
+import AnalyticsPieChart from '../components/AnalyticsPieChart'
 
 ChartJS.register(
   CategoryScale,
@@ -28,60 +30,16 @@ ChartJS.register(
 )
 
 const Dashboard = () => {
-  const stats = [
-    { label: "Pendapatan Hari Ini", value: "$53,000", percent: "+55%", color: "green" },
-    { label: "Pengguna Hari Ini", value: "2,300", percent: "+3%", color: "blue" },
-    { label: "Klien Baru", value: "+3,462", percent: "-2%", color: "red" },
-    { label: "Penjualan", value: "$103,430", percent: "+5%", color: "purple" },
-  ]
+  
 
   const layanan = [
     { nama: "Color Care", slug: "color-care" },
-    { nama: "Green Clean", slug: "green-clean" },
-    { nama: "Antibacterial Guard", slug: "antibacterial-guard" }
+    { nama: "Green Clean", slug: "stain-removal" },
+    { nama: "Bio Detergency", slug: "bio-detergency" },
+    { nama: "Antibacterial Guard", slug: "antibacterial-guard" },
+    { nama: "Brite White", slug: "brite-white" }
   ]
 
-  const barData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
-    datasets: [
-      {
-        label: "Penjualan (dalam ribuan $)",
-        data: [12, 19, 14, 17, 22, 30, 28, 26, 32, 35, 40, 45],
-        backgroundColor: "rgba(99, 102, 241, 0.7)", // purple-600
-      },
-    ],
-  }
-
-  const barOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: 'top' },
-      title: { display: true, text: 'Penjualan Bulanan Tahun Ini' },
-    },
-  }
-
-  const lineData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
-    datasets: [
-      {
-        label: "Jumlah Pelanggan",
-        data: [50, 75, 120, 180, 220, 260, 300, 350, 400, 430, 460, 500],
-        borderColor: "rgba(59, 130, 246, 1)", // blue-500
-        backgroundColor: "rgba(59, 130, 246, 0.3)",
-        fill: true,
-        tension: 0.3,
-        pointRadius: 4,
-      },
-    ],
-  }
-
-  const lineOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: 'top' },
-      title: { display: true, text: 'Pertumbuhan Pelanggan Tahun Ini' },
-    },
-  }
 
   return (
     <div className="space-y-12">
@@ -103,8 +61,8 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Form Pemesanan */}
-      <OrderForm />
+      <LayananRekomendasi/>
+      <AnalyticsPieChart/>
     </div>
   )
 }

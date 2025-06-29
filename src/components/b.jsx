@@ -1,27 +1,28 @@
-import { MdBorderColor } from "react-icons/md";
-import { FiLogOut } from "react-icons/fi"; 
+import { GiClothes } from "react-icons/gi"; 
 import {
   LayoutDashboard,
-  ShoppingCart,
-  Box,
-  Settings,
-  LogOut, // Mengganti LogIn dengan LogOut untuk ikon yang lebih sesuai
-} from 'lucide-react';
+  ShoppingCart,  // untuk delivery
+  Box,           // untuk produk
+  BarChart2,     // untuk laporan
+  Settings,      // untuk pengaturan akun
+  LogIn,         // untuk sign in
+  
+} from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient'; // Pastikan path ini benar
 
 // Data bisa kita letakkan di luar komponen karena tidak berubah
 const menuItems = [
-  { name: 'Dashboard', icon: <LayoutDashboard />, path: '/dashboard' },
-  { name: 'Produk', icon: <Box />, path: '/produk' },
-  { name: 'Form Pemesanan', icon: <MdBorderColor />, path: '/form' },
-  { name: 'Delivery', icon: <ShoppingCart />, path: '/delivery' },
-];
+  { name: 'Dashboard', icon: <LayoutDashboard />, path: '/admin/dashboard' },
+  { name: 'Pesanan', icon: <GiClothes  />, path: '/admin/pesanan' },
+  { name: 'Laporan', icon: <BarChart2 />, path: '/admin/laporan' },
+  { name: 'Delivery', icon: <ShoppingCart />, path: '/admin/delivery' }
+]
 
 const accountItems = [
   { name: 'Pengaturan Akun', icon: <Settings />, path: '/akun' },
   // Kita akan menangani Log Out secara khusus
-  { name: 'Log Out', icon: <FiLogOut />, path: '/logout' }, 
+  { name: 'Log Out', icon: <LogOut />, path: '/logout' }, 
 ];
 
 
