@@ -20,7 +20,7 @@ import CustomerManagement from "./pages/CustomerManagement";
 import Delivery from "./pages/Delivery";
 
 //admin
-import AdminLayout from "./components/AdminLayout";
+
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrderAnalytics from "./pages/admin/AdminOrderAnalytics";
 
