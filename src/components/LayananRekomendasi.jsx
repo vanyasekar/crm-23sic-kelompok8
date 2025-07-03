@@ -1,36 +1,27 @@
 import { useState } from "react";
-import { supabase } from "../supabaseClient"; // Pastikan path ini benar
+import { supabase } from "../supabaseClient"; // Sesuaikan path jika perlu
 
-// ... (questionsData dan komponen HasilRekomendasi tetap sama)
-
+// --- DATA BARU: Sesuaikan pertanyaan dengan klasifikasi baru ---
 const questionsData = [
   {
     id: "q1",
-    text: "Apa warna dominan pada pakaian yang akan dicuci?",
+    text: "Pilih jenis proses pencucian yang Anda inginkan:",
     options: [
-      { value: "putih", label: "Putih Dominan" },
-      { value: "berwarna", label: "Berwarna / Hitam Dominan" },
-      { value: "seimbang", label: "Seimbang antara Putih & Berwarna" },
+      { value: "green_dry_cleaning", label: "Green Dry Cleaning (Premium dengan bahan khusus aQualis)" },
+      { value: "wet_cleaning", label: "Wet Cleaning (Proses standar)" },
     ],
   },
   {
     id: "q2",
-    text: "Apakah pada pakaian terdapat noda dari makanan, minuman, darah, atau keringat?",
+    text: "Apa warna dominan pada pakaian Anda?",
     options: [
-      { value: "ya", label: "Ya" },
-      { value: "tidak", label: "Tidak" },
-    ],
-  },
-  {
-    id: "q3",
-    text: "Apakah Anda membutuhkan perlindungan antibakteri ekstra (misal: untuk pakaian bayi/setelah sakit)?",
-    options: [
-      { value: "ya", label: "Ya" },
-      { value: "tidak", label: "Tidak" },
+      { value: "putih", label: "Putih Dominan" },
+      { value: "berwarna", label: "Berwarna / Hitam Dominan" },
     ],
   },
 ];
 
+// Komponen HasilRekomendasi tidak perlu diubah
 function HasilRekomendasi({ rekomendasi, onReset }) {
   return (
     <div className="space-y-4 text-center">
@@ -53,20 +44,20 @@ function HasilRekomendasi({ rekomendasi, onReset }) {
 }
 
 
-export default function LayananRekomendasi() {
-  const [step, setStep] = useState(0); 
+// --- KOMPONEN UTAMA ---
+export default function LayananRekomendasi({ onRecommendationComplete = () => {} }) {
+  const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [rekomendasi, setRekomendasi] = useState([]);
   const [isFinished, setIsFinished] = useState(false);
 
-  // ... (handleAnswerChange, handleNext, reset tetap sama)
-   const handleAnswerChange = (questionId, value) => {
+  const handleAnswerChange = (questionId, value) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
 
   const handleNext = () => {
     if (step === questionsData.length - 1) {
-      calculateAndSaveRekomendasi(); // Ganti nama fungsi agar lebih jelas
+      calculateAndSaveRekomendasi();
       setIsFinished(true);
     } else {
       setStep((prev) => prev + 1);
@@ -80,50 +71,45 @@ export default function LayananRekomendasi() {
     setIsFinished(false);
   };
 
-  // --- FUNGSI BARU UNTUK MENYIMPAN HASIL KE SUPABASE ---
   const saveResultToSupabase = async (rekomendasiFinal, jawabanUser) => {
     const { error } = await supabase.from("recommendation_logs").insert([
-      { 
-        rekomendasi_final: rekomendasiFinal, 
-        jawaban: jawabanUser 
-      },
+      { rekomendasi_final: rekomendasiFinal, jawaban: jawabanUser },
     ]);
-
     if (error) {
       console.error("Gagal menyimpan rekomendasi:", error.message);
     } else {
       console.log("Rekomendasi berhasil disimpan!");
+      onRecommendationComplete();
     }
   };
 
+  // --- LOGIKA BARU: Sesuaikan dengan klasifikasi baru ---
   const calculateAndSaveRekomendasi = () => {
     let layanan = [];
-    
-    if (answers.q1 === "putih") {
-      layanan.push("BriteWhite");
+
+    // Langkah 1: Tentukan Layanan Utama
+    if (answers.q1 === "green_dry_cleaning") {
+      layanan.push("Green Dry Cleaning");
     } else {
-      layanan.push("ColorCare");
+      layanan.push("Wet Cleaning");
     }
 
-    if (answers.q2 === "ya") {
-      layanan.push("Bio StainRemoval");
+    // Langkah 2: Tentukan Add-on berdasarkan Warna
+    if (answers.q2 === "putih") {
+      layanan.push("BriteWhite"); // Add-on untuk pakaian putih
+    } else {
+      layanan.push("ColorCare"); // Add-on untuk pakaian berwarna
     }
 
-    if (answers.q3 === "ya") {
-      layanan.push("Antibacterial Guard");
-    }
-    
     setRekomendasi(layanan);
-    
-    // Panggil fungsi untuk menyimpan setelah rekomendasi dihitung
-    saveResultToSupabase(layanan, answers); 
+    saveResultToSupabase(layanan, answers);
   };
-  
+
   const currentQuestion = questionsData[step];
   const currentAnswer = answers[currentQuestion.id];
 
   return (
-    // ... JSX tidak berubah sama sekali
+    // JSX untuk tampilan tidak perlu diubah
     <div className="bg-white shadow-xl rounded-lg p-8 max-w-2xl mx-auto my-8 transition-all duration-300">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Cari Tahu Layanan yang Tepat</h2>
       {!isFinished ? (
@@ -147,7 +133,7 @@ export default function LayananRekomendasi() {
                   value={option.value}
                   checked={currentAnswer === option.value}
                   onChange={() => handleAnswerChange(currentQuestion.id, option.value)}
-                  className="sr-only" 
+                  className="sr-only"
                 />
                 {option.label}
               </label>

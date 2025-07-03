@@ -34,7 +34,7 @@ const Dashboard = () => {
 
   const layanan = [
     { nama: "Color Care", slug: "color-care" },
-    { nama: "Green Clean", slug: "stain-removal" },
+    { nama: "Stain removal", slug: "stain-removal" },
     { nama: "Bio Detergency", slug: "bio-detergency" },
     { nama: "Antibacterial Guard", slug: "antibacterial-guard" },
     { nama: "Brite White", slug: "brite-white" }

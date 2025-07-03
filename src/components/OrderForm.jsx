@@ -7,7 +7,7 @@ export default function OrderForm() {
     telepon: "",
     email: "",
     alamat: "",
-    layanan: "ColorCare", // Nilai default untuk layanan utama
+    layanan: "WetClean", // Nilai default untuk layanan utama
     addons: [], // <-- LANGKAH 1: Tambahkan state untuk menampung add-on (array)
     catatan: "",
     metode_pembayaran: "COD",
@@ -91,7 +91,7 @@ export default function OrderForm() {
         telepon: "",
         email: form.email,
         alamat: "",
-        layanan: "ColorCare",
+        layanan: "WetClean",
         addons: [], // Reset addons
         catatan: "",
         metode_pembayaran: "COD",
@@ -124,9 +124,8 @@ export default function OrderForm() {
         <div>
           <label className="block text-sm mb-1">Pilih Layanan Utama</label>
           <select name="layanan" value={form.layanan} onChange={handleChange} className="w-full px-4 py-2 border rounded">
-            <option value="ColorCare">ColorCare</option>
-            <option value="BriteWhite">BriteWhite</option>
-            <option value="Bio Detergency">Bio Detergency</option>
+            <option value="WetClean">Wet Clean</option>
+            <option value="GreenDryCleanning">Green Dry Cleanning</option>
           </select>
         </div>
 
@@ -138,23 +137,23 @@ export default function OrderForm() {
               <input
                 type="checkbox"
                 name="addons"
-                value="Bio StainRemoval"
-                checked={form.addons.includes("Bio StainRemoval")}
+                value="Color Care"
+                checked={form.addons.includes("Color Care")}
                 onChange={handleAddonChange}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="ml-2 text-gray-700">Bio StainRemoval</span>
+              <span className="ml-2 text-gray-700">Color Care</span>
             </label>
             <label className="flex items-center">
               <input
                 type="checkbox"
                 name="addons"
-                value="Antibacterial Guard"
-                checked={form.addons.includes("Antibacterial Guard")}
+                value="Brite White"
+                checked={form.addons.includes("Brite White")}
                 onChange={handleAddonChange}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="ml-2 text-gray-700">Antibacterial Guard</span>
+              <span className="ml-2 text-gray-700">Brite White</span>
             </label>
           </div>
         </div>
