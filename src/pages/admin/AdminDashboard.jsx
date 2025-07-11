@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
+import AnalyticsPieChart from "../../components/AnalyticsPieChart";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -216,6 +217,8 @@ export default function AdminDashboard() {
           <Line options={lineOptions} data={lineData} />
         </div>
       </div>
+      <AnalyticsPieChart/>
     </div>
+    
   );
 }
