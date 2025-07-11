@@ -1,38 +1,112 @@
-import { useState } from "react";
-import { supabase } from "../supabaseClient"; // Sesuaikan path jika perlu
+// LayananRekomendasi.jsx
 
-// --- DATA BARU: Sesuaikan pertanyaan dengan klasifikasi baru ---
+import { useState } from "react";
+// Hapus atau jadikan komentar baris ini jika tidak lagi menggunakan Supabase
+// import { supabase } from "../supabaseClient"; 
+
+// Definisikan URL API Backend Flask Anda
+const API_BASE_URL = "https://65de7848ede3.ngrok-free.app"; // Sesuaikan jika API berjalan di tempat lain (misal Ngrok URL)
+
 const questionsData = [
   {
-    id: "q1",
-    text: "Pilih jenis proses pencucian yang Anda inginkan:",
+    id: "jenis_pakaian", 
+    text: "Pilih jenis pakaian Anda:",
     options: [
-      { value: "green_dry_cleaning", label: "Green Dry Cleaning (Premium dengan bahan khusus aQualis)" },
-      { value: "wet_cleaning", label: "Wet Cleaning (Proses standar)" },
+      { value: "Kemeja", label: "Kemeja" },
+      { value: "Jas", label: "Jas" },
+      { value: "Handuk", label: "Handuk" },
+      { value: "Gaun", label: "Gaun" },
+      { value: "Celana", label: "Celana" },
+      // Tambahkan opsi lain sesuai dataset Anda
     ],
   },
   {
-    id: "q2",
+    id: "bahan_pakaian", 
+    text: "Apa bahan dasar pakaian ini?",
+    options: [
+      { value: "Katun", label: "Katun" },
+      { value: "Wol", label: "Wol" },
+      { value: "Sutra", label: "Sutra" },
+      { value: "Jeans", label: "Jeans" },
+      // Tambahkan opsi lain sesuai dataset Anda
+    ],
+  },
+  {
+    id: "brand_pakaian", 
+    text: "Apakah brand pakaian Anda premium atau biasa?",
+    options: [
+      { value: "Premium", label: "Premium" },
+      { value: "Biasa", label: "Biasa" },
+    ],
+  },
+  {
+    id: "warna_pakaian", 
     text: "Apa warna dominan pada pakaian Anda?",
     options: [
       { value: "putih", label: "Putih Dominan" },
-      { value: "berwarna", label: "Berwarna / Hitam Dominan" },
+      { value: "berwarna_hitam", label: "Berwarna / Hitam Dominan" }, 
     ],
   },
 ];
 
-// Komponen HasilRekomendasi tidak perlu diubah
-function HasilRekomendasi({ rekomendasi, onReset }) {
+// Komponen HasilRekomendasi yang diperbarui
+function HasilRekomendasi({ recommendedServices, confidenceScoresMain, confidenceScoresColor, onReset }) {
+  const sortedConfidenceMain = confidenceScoresMain ? Object.entries(confidenceScoresMain).sort(([, a], [, b]) => b - a) : [];
+  const sortedConfidenceColor = confidenceScoresColor ? Object.entries(confidenceScoresColor).sort(([, a], [, b]) => b - a) : [];
+
   return (
     <div className="space-y-4 text-center">
       <h3 className="text-lg font-semibold text-gray-800">Rekomendasi Layanan Untuk Anda:</h3>
-      <ul className="list-disc list-inside bg-gray-50 p-4 rounded-lg text-left">
-        {rekomendasi.map((layanan, index) => (
-          <li key={index} className="text-gray-700 font-medium mb-2">
+      <ul className="list-disc list-inside bg-blue-50 border border-blue-200 p-4 rounded-lg text-left">
+        {recommendedServices.map((layanan, index) => (
+          <li key={index} className="text-blue-800 font-bold mb-2">
             {layanan}
           </li>
         ))}
       </ul>
+
+      {/* Visualisasi Confidence Score untuk Layanan Utama */}
+      {sortedConfidenceMain.length > 0 && (
+        <div className="mt-6 border-t pt-4">
+          <h4 className="text-md font-semibold text-gray-700 mb-3">Confidence Score (Layanan Proses Utama):</h4>
+          <div className="space-y-2">
+            {sortedConfidenceMain.map(([serviceName, score]) => (
+              <div key={serviceName} className="flex items-center">
+                <span className="w-1/3 text-left text-gray-600 text-sm">{serviceName}</span>
+                <div className="w-2/3 bg-gray-200 rounded-full h-4">
+                  <div
+                    className="bg-blue-500 h-4 rounded-full"
+                    style={{ width: `${score * 100}%` }}
+                  ></div>
+                </div>
+                <span className="ml-2 text-gray-800 text-sm">{`${(score * 100).toFixed(1)}%`}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Visualisasi Confidence Score untuk Layanan Warna */}
+      {sortedConfidenceColor.length > 0 && (
+        <div className="mt-6 border-t pt-4">
+          <h4 className="text-md font-semibold text-gray-700 mb-3">Confidence Score (Layanan Warna):</h4>
+          <div className="space-y-2">
+            {sortedConfidenceColor.map(([serviceName, score]) => (
+              <div key={serviceName} className="flex items-center">
+                <span className="w-1/3 text-left text-gray-600 text-sm">{serviceName}</span>
+                <div className="w-2/3 bg-blue-200 rounded-full h-4">
+                  <div
+                    className="bg-purple-500 h-4 rounded-full"
+                    style={{ width: `${score * 100}%` }}
+                  ></div>
+                </div>
+                <span className="ml-2 text-gray-800 text-sm">{`${(score * 100).toFixed(1)}%`}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <button
         className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg mt-4 transition-colors"
         onClick={onReset}
@@ -44,21 +118,30 @@ function HasilRekomendasi({ rekomendasi, onReset }) {
 }
 
 
-// --- KOMPONEN UTAMA ---
 export default function LayananRekomendasi({ onRecommendationComplete = () => {} }) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [rekomendasi, setRekomendasi] = useState([]);
+  const [recommendedServices, setRecommendedServices] = useState([]);
+  const [confidenceScoresMain, setConfidenceScoresMain] = useState(null);
+  const [confidenceScoresColor, setConfidenceScoresColor] = useState(null);
   const [isFinished, setIsFinished] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleAnswerChange = (questionId, value) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
 
   const handleNext = () => {
+    const currentQuestionAnswered = answers[questionsData[step].id];
+    if (!currentQuestionAnswered) {
+      setError("Mohon pilih jawaban terlebih dahulu.");
+      return;
+    }
+    setError(null);
+
     if (step === questionsData.length - 1) {
-      calculateAndSaveRekomendasi();
-      setIsFinished(true);
+      fetchRekomendasiFromBackend();
     } else {
       setStep((prev) => prev + 1);
     }
@@ -67,49 +150,58 @@ export default function LayananRekomendasi({ onRecommendationComplete = () => {}
   const reset = () => {
     setStep(0);
     setAnswers({});
-    setRekomendasi([]);
+    setRecommendedServices([]);
+    setConfidenceScoresMain(null);
+    setConfidenceScoresColor(null);
     setIsFinished(false);
+    setIsLoading(false);
+    setError(null);
   };
 
-  const saveResultToSupabase = async (rekomendasiFinal, jawabanUser) => {
-    const { error } = await supabase.from("recommendation_logs").insert([
-      { rekomendasi_final: rekomendasiFinal, jawaban: jawabanUser },
-    ]);
-    if (error) {
-      console.error("Gagal menyimpan rekomendasi:", error.message);
-    } else {
-      console.log("Rekomendasi berhasil disimpan!");
+  const fetchRekomendasiFromBackend = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const payload = {
+        "jenis_pakaian": answers.jenis_pakaian,
+        "bahan_pakaian": answers.bahan_pakaian,
+        "brand_pakaian": answers.brand_pakaian,
+        "warna_pakaian": answers.warna_pakaian,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/predict`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Gagal mendapatkan rekomendasi dari server.");
+      }
+
+      const result = await response.json();
+      setRecommendedServices(result.recommended_services);
+      setConfidenceScoresMain(result.confidence_scores_main);
+      setConfidenceScoresColor(result.confidence_scores_color);
+      setIsFinished(true);
       onRecommendationComplete();
+    } catch (err) {
+      console.error("Error fetching recommendation:", err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
-  };
-
-  // --- LOGIKA BARU: Sesuaikan dengan klasifikasi baru ---
-  const calculateAndSaveRekomendasi = () => {
-    let layanan = [];
-
-    // Langkah 1: Tentukan Layanan Utama
-    if (answers.q1 === "green_dry_cleaning") {
-      layanan.push("Green Dry Cleaning");
-    } else {
-      layanan.push("Wet Cleaning");
-    }
-
-    // Langkah 2: Tentukan Add-on berdasarkan Warna
-    if (answers.q2 === "putih") {
-      layanan.push("BriteWhite"); // Add-on untuk pakaian putih
-    } else {
-      layanan.push("ColorCare"); // Add-on untuk pakaian berwarna
-    }
-
-    setRekomendasi(layanan);
-    saveResultToSupabase(layanan, answers);
   };
 
   const currentQuestion = questionsData[step];
   const currentAnswer = answers[currentQuestion.id];
 
+  const isNextDisabled = !currentAnswer || isLoading;
+
   return (
-    // JSX untuk tampilan tidak perlu diubah
     <div className="bg-white shadow-xl rounded-lg p-8 max-w-2xl mx-auto my-8 transition-all duration-300">
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Cari Tahu Layanan yang Tepat</h2>
       {!isFinished ? (
@@ -139,17 +231,24 @@ export default function LayananRekomendasi({ onRecommendationComplete = () => {}
               </label>
             ))}
           </div>
+          {error && <p className="text-red-500 text-center">{error}</p>}
           <button
             className="bg-blue-600 text-white px-6 py-2 rounded-lg w-full mt-4 disabled:bg-gray-300 hover:bg-blue-700 transition-colors"
-            disabled={!currentAnswer}
+            disabled={isNextDisabled}
             onClick={handleNext}
           >
-            {step === questionsData.length - 1 ? "Tampilkan Rekomendasi" : "Selanjutnya"}
+            {isLoading ? "Memuat..." : (step === questionsData.length - 1 ? "Tampilkan Rekomendasi" : "Selanjutnya")}
           </button>
         </div>
       ) : (
-        <HasilRekomendasi rekomendasi={rekomendasi} onReset={reset} />
+        <HasilRekomendasi
+          recommendedServices={recommendedServices}
+          confidenceScoresMain={confidenceScoresMain}
+          confidenceScoresColor={confidenceScoresColor}
+          onReset={reset}
+        />
       )}
     </div>
   );
 }
+
