@@ -11,18 +11,19 @@ import Unauthorized from "./pages/401";
 import Forbidden from "./pages/Forbidden";
 
 import Product from "./pages/Produk";
-import ProductAntibacterial from "./pages/ProdukAntibacterial";
+import ProductBioDetergency from "./pages/ProdukBioDetergency";
 import ProductColor from "./pages/ProdukColor";
-import ProductGreen from "./pages/ProdukGreen";
+import ProductStainRemoval from "./pages/ProdukStainRemoval";
+import ProductAntibacterial from "./pages/ProdukAntibacterial";
+import ProductBriteWhite from "./pages/ProdukBriteWhite";
 
-import SalesManagement from "./pages/SalesManagement";
-import CustomerManagement from "./pages/CustomerManagement";
+import FormPemesanan from "./pages/FormPemesanan";
 import Delivery from "./pages/Delivery";
 
 //admin
-
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrderAnalytics from "./pages/admin/AdminOrderAnalytics";
+import AdminPesanan from "./pages/admin/AdminPesanan";
 
 function App() {
   return (
@@ -33,16 +34,24 @@ function App() {
       <Route path="/401" element={<Unauthorized />} />
       <Route path="/403" element={<Forbidden />} />
 
-      {/* Routes with UserLayout */}
-      <Route element={<UserLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/produk" element={<Product />} />
-        <Route path="/produk/antibacterial-guard" element={<ProductAntibacterial />} />
-        <Route path="/produk/color-care" element={<ProductColor />} />
-        <Route path="/produk/green-clean" element={<ProductGreen />} />
-        <Route path="/penjualan" element={<SalesManagement />} />
-        <Route path="/pelanggan" element={<CustomerManagement />} />
-        <Route path="/delivery" element={<Delivery />} />
+      {/* User Layout with Protected Routes */}
+      <Route
+        path="/"
+        element={
+          <RequireAuth role="user">
+            <UserLayout />
+          </RequireAuth>
+        }
+      >
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="produk" element={<Product />} />
+        <Route path="produk/bio-detergency" element={<ProductBioDetergency />} />
+        <Route path="produk/color-care" element={<ProductColor />} />
+        <Route path="produk/stain-removal" element={<ProductStainRemoval />} />
+        <Route path="produk/antibacterial-guard" element={<ProductAntibacterial />} />
+        <Route path="produk/brite-white" element={<ProductBriteWhite />} />
+        <Route path="form" element={<FormPemesanan />} />
+        <Route path="delivery" element={<Delivery />} />
       </Route>
 
       {/* Admin Layout with Protected Route */}
@@ -55,6 +64,8 @@ function App() {
         }
       >
         <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="laporan" element={<AdminOrderAnalytics />} />
+        <Route path="pesanan" element={<AdminPesanan />} />
       </Route>
     </Routes>
   );

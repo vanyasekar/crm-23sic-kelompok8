@@ -1,3 +1,4 @@
+import { FiLogOut } from "react-icons/fi"; 
 import { GiClothes } from "react-icons/gi"; 
 import {
   LayoutDashboard,
@@ -8,68 +9,96 @@ import {
   LogIn,         // untuk sign in
   
 } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient'; // Pastikan path ini benar
 
+// Data bisa kita letakkan di luar komponen karena tidak berubah
 const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/admin/dashboard' },
   { name: 'Pesanan', icon: <GiClothes  />, path: '/admin/pesanan' },
-  { name: 'Laporan', icon: <BarChart2 />, path: '/laporan' },
-  { name: 'Delivery', icon: <ShoppingCart />, path: '/delivery' }
+  { name: 'Laporan', icon: <BarChart2 />, path: '/admin/laporan' },
+  { name: 'Delivery', icon: <ShoppingCart />, path: '/admin/delivery' }
 ]
 
 const accountItems = [
   { name: 'Pengaturan Akun', icon: <Settings />, path: '/akun' },
-  { name: 'Log Out', icon: <LogIn />, path: '/' },
-  
-]
+  // Kita akan menangani Log Out secara khusus
+  { name: 'Log Out', icon: <FiLogOut />, path: '/logout' }, 
+];
 
-const SidebarAdmin = () => {
-  const location = useLocation()
 
-  const isActive = (path) => location.pathname === path
-
+// --- KOMPONEN KECIL & BISA DIPAKAI ULANG ---
+// Komponen ini bertanggung jawab untuk me-render satu link sidebar
+function SidebarLink({ item, isActive }) {
   return (
-    <aside className="bg-white w-64 h-screen shadow-lg px-4 py-6 hidden md:block">
-      <div className="text-xl font-bold mb-8 text-purple-700">UMKM CRM</div>
-
-      {/* Menu Utama */}
-      <nav className="space-y-1">
-        {menuItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 transition ${
-              isActive(item.path)
-                ? 'bg-purple-200 text-purple-800 font-semibold'
-                : 'text-gray-700'
-            }`}
-          >
-            <span className="w-5 h-5">{item.icon}</span>
-            {item.name}
-          </Link>
-        ))}
-      </nav>
-
-      {/* Akun */}
-      <div className="mt-8 text-xs font-semibold text-gray-500">AKUN</div>
-      <nav className="mt-2 space-y-1">
-        {accountItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-100 transition ${
-              isActive(item.path)
-                ? 'bg-purple-200 text-purple-800 font-semibold'
-                : 'text-gray-700'
-            }`}
-          >
-            <span className="w-5 h-5">{item.icon}</span>
-            {item.name}
-          </Link>
-        ))}
-      </nav>
-    </aside>
-  )
+    <Link
+      to={item.path}
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+        isActive
+          ? 'bg-purple-600 text-white font-semibold shadow-md'
+          : 'text-gray-600 hover:bg-purple-50 hover:text-purple-700'
+      }`}
+    >
+      <span className="w-5 h-5">{item.icon}</span>
+      {item.name}
+    </Link>
+  );
 }
 
-export default SidebarAdmin
+
+// --- KOMPONEN UTAMA SIDEBAR ---
+export default function Sidebar() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isActive = (path) => location.pathname === path;
+
+  // Fungsi untuk menangani proses logout
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/'); // Arahkan ke halaman utama atau login setelah logout
+  };
+
+  return (
+    // Menggunakan flex-col untuk tata letak vertikal
+    <aside className="bg-white w-64 h-screen shadow-lg p-4 flex flex-col hidden md:flex">
+      <div className="text-2xl font-bold mb-10 text-center text-purple-700">
+        UMKM CRM
+      </div>
+
+      {/* --- Bagian Menu Utama --- */}
+      <nav className="flex-grow">
+        <p className="text-xs font-semibold text-gray-400 mb-2 px-3">MENU</p>
+        <div className="space-y-1">
+          {menuItems.map((item) => (
+            <SidebarLink key={item.name} item={item} isActive={isActive(item.path)} />
+          ))}
+        </div>
+      </nav>
+
+      {/* --- Bagian Akun (Akan menempel di bawah) --- */}
+      <div className="mt-auto"> {/* 'mt-auto' mendorong blok ini ke bawah */}
+        <p className="text-xs font-semibold text-gray-400 mb-2 px-3">AKUN</p>
+        <div className="space-y-1">
+          {accountItems.map((item) => {
+            // Tangani kasus "Log Out" secara khusus
+            if (item.name === 'Log Out') {
+              return (
+                <button
+                  key={item.name}
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200"
+                >
+                  <span className="w-5 h-5">{item.icon}</span>
+                  {item.name}
+                </button>
+              );
+            }
+            // Untuk item lainnya, gunakan komponen SidebarLink
+            return <SidebarLink key={item.name} item={item} isActive={isActive(item.path)} />;
+          })}
+        </div>
+      </div>
+    </aside>
+  );
+}
