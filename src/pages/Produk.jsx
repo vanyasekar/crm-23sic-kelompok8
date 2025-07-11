@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export default function Produk() {
   const layanan = [
     { nama: "Color Care", slug: "color-care" },
-    { nama: "Green Clean", slug: "stain-removal" },
+    { nama: "Bio Stain Removal", slug: "stain-removal" },
     { nama: "Bio Detergency", slug: "bio-detergency" },
     { nama: "Antibacterial Guard", slug: "antibacterial-guard" },
     { nama: "Brite White", slug: "brite-white" }

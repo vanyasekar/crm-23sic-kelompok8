@@ -1,224 +1,135 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "../../supabaseClient";
-import AnalyticsPieChart from "../../components/AnalyticsPieChart";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bar, Line } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { DollarSign, Users, ShoppingCart } from 'lucide-react';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend
-);
+// Registrasi elemen chart
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function AdminDashboard() {
-  const [totalPendapatan, setTotalPendapatan] = useState(0);
-  const [jumlahUser, setJumlahUser] = useState(0);
-  const [jumlahOrder, setJumlahOrder] = useState(0);
-  const [dataBulanan, setDataBulanan] = useState([]);
-  const [dataUserBulanan, setDataUserBulanan] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [allOrders, setAllOrders] = useState([]);
+  const [totalUser, setTotalUser] = useState(0);
+  const [dateRange, setDateRange] = useState('30d'); // Opsi: '7d', '30d', 'all'
 
   useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      
+      // Ambil semua data pesanan sekali saja
+      const { data: ordersData, error: ordersError } = await supabase.from("orders").select("total_harga, created_at, status_pembayaran, layanan");
+      if (ordersError) console.error("Gagal mengambil data pesanan:", ordersError);
+      
+      // Ambil jumlah total pengguna
+      const { count: userCount, error: userError } = await supabase.from("profiles").select('id', { count: 'exact' });
+      if (userError) console.error("Gagal mengambil data user:", userError);
+
+      setAllOrders(ordersData || []);
+      setTotalUser(userCount || 0);
+      setLoading(false);
+    };
+
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    // Ambil total pendapatan dari order yang sudah dibayar hari ini
-    const { data: pendapatanData, error: pendapatanError } = await supabase
-      .from("orders")
-      .select("total_harga, created_at")
-      .eq("status_pembayaran", "Sudah Dibayar");
-
-    if (!pendapatanError) {
-      const today = new Date().toISOString().slice(0, 10);
-      const pendapatanHariIni = pendapatanData
-        .filter((d) => d.created_at.startsWith(today))
-        .reduce((sum, order) => sum + parseFloat(order.total_harga || "0"), 0)
-      setTotalPendapatan(pendapatanHariIni);
+  // Gunakan useMemo untuk memproses data setiap kali filter berubah
+  // Ini lebih efisien daripada mengambil ulang data dari Supabase
+  const processedData = useMemo(() => {
+    if (!allOrders.length) {
+      return { totalPendapatan: 0, jumlahOrder: 0, layananPopuler: [] };
     }
 
-    // Ambil jumlah user
-    const { data: userData } = await supabase.from("profiles").select("id");
-    setJumlahUser(userData.length);
+    const now = new Date();
+    let startDate = new Date(0); // Default untuk 'semua'
 
-    // Ambil jumlah order hari ini
-    const { data: orderData } = await supabase.from("orders").select("*");
-    setJumlahOrder(
-      orderData.filter((o) =>
-        o.created_at.startsWith(new Date().toISOString().slice(0, 10))
-      ).length
-    );
+    if (dateRange === '7d') {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(now.getDate() - 7);
+      startDate = sevenDaysAgo;
+    } else if (dateRange === '30d') {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(now.getDate() - 30);
+      startDate = thirtyDaysAgo;
+    }
 
-    // Data penjualan bulanan
-    const bulan = Array.from({ length: 12 }, (_, i) => i + 1);
-    const penjualanBulanan = bulan.map((b) => {
-      const ordersInMonth = orderData.filter(
-        (o) => new Date(o.created_at).getMonth() + 1 === b
-      );
-      return ordersInMonth.reduce(
-        (total, o) => total + (o.total_harga || 0),
-        0
-      );
+    const filteredOrders = allOrders.filter(o => new Date(o.created_at) >= startDate);
+
+    const totalPendapatan = filteredOrders
+      .filter(o => o.status_pembayaran === 'Sudah Dibayar')
+      .reduce((sum, order) => sum + (order.total_harga || 0), 0);
+
+    const jumlahOrder = filteredOrders.length;
+    
+    const layananCount = {};
+    filteredOrders.forEach(order => {
+      if (Array.isArray(order.layanan)) {
+        order.layanan.forEach(service => {
+          layananCount[service] = (layananCount[service] || 0) + 1;
+        });
+      }
     });
 
-    setDataBulanan(penjualanBulanan);
+    const layananPopuler = Object.entries(layananCount).map(([name, value]) => ({ name, value }));
 
-    // Data user bulanan (jika ingin ditambahkan)
-    const userBulanan = bulan.map((b) => {
-      const usersInMonth = userData.filter(
-        (u) => new Date(u.created_at).getMonth() + 1 === b
-      );
-      return usersInMonth.length;
-    });
+    return { totalPendapatan, jumlahOrder, layananPopuler };
+  }, [allOrders, dateRange]);
 
-    setDataUserBulanan(userBulanan);
+
+  // Konfigurasi untuk Pie Chart
+  const pieData = {
+    labels: processedData?.layananPopuler.map(d => d.name) || [],
+    datasets: [{
+      data: processedData?.layananPopuler.map(d => d.value) || [],
+      backgroundColor: ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EF4444"],
+      hoverOffset: 4
+    }],
   };
-
-  const stats = [
-    {
-      label: "Pendapatan Hari Ini",
-      value: `Rp ${totalPendapatan.toLocaleString("id-ID")}`,
-      percent: "+10%",
-      color: "green",
-    },
-    {
-      label: "Pengguna Hari Ini",
-      value: `${jumlahUser}`,
-      percent: "+3%",
-      color: "blue",
-    },
-    {
-      label: "Klien Baru",
-      value: "+3",
-      percent: "-2%",
-      color: "red",
-    },
-    {
-      label: "Order Hari Ini",
-      value: `${jumlahOrder}`,
-      percent: "+5%",
-      color: "purple",
-    },
-  ];
-
-  const barData = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "Mei",
-      "Jun",
-      "Jul",
-      "Agu",
-      "Sep",
-      "Okt",
-      "Nov",
-      "Des",
-    ],
-    datasets: [
-      {
-        label: "Penjualan (Rp)",
-        data: dataBulanan,
-        backgroundColor: "rgba(99, 102, 241, 0.7)", // purple-600
-      },
-    ],
-  };
-
-  const barOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: "top" },
-      title: { display: true, text: "Penjualan Bulanan Tahun Ini" },
-    },
-  };
-
-  const lineData = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "Mei",
-      "Jun",
-      "Jul",
-      "Agu",
-      "Sep",
-      "Okt",
-      "Nov",
-      "Des",
-    ],
-    datasets: [
-      {
-        label: "Pendaftaran Pengguna",
-        data: dataUserBulanan,
-        borderColor: "rgba(59, 130, 246, 1)",
-        backgroundColor: "rgba(59, 130, 246, 0.3)",
-        fill: true,
-        tension: 0.3,
-        pointRadius: 4,
-      },
-    ],
-  };
-
-  const lineOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: "top" },
-      title: { display: true, text: "Pertumbuhan Pengguna Tahun Ini" },
-    },
-  };
+  
+  if (loading) return <div className="p-6 text-center">Memuat data dashboard...</div>;
+  
+  const getFilterLabel = () => {
+      if(dateRange === '7d') return '7 Hari Terakhir';
+      if(dateRange === '30d') return '30 Hari Terakhir';
+      return 'Semua Waktu';
+  }
 
   return (
-    <div className="space-y-12">
-      {/* Statistik Ringkas */}
-      <div className="px-6 space-y-6 max-w-6xl mx-auto">
-        <h2 className="text-2xl font-bold text-gray-800">Statistik Hari Ini</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map(({ label, value, percent, color }) => (
-            <div
-              key={label}
-              className="bg-white rounded-xl shadow p-5 border border-gray-100"
-            >
-              <p className="text-sm text-gray-500">{label}</p>
-              <h2
-                className={`text-2xl font-bold text-${color}-600 flex items-center gap-2`}
-              >
-                {value}
-                <span className={`text-xs font-semibold text-${color}-500`}>
-                  {percent}
-                </span>
-              </h2>
-            </div>
-          ))}
+    <div className="p-6 bg-gray-50 space-y-8">
+      <div className="flex flex-wrap justify-between items-center gap-4">
+        <h1 className="text-3xl font-bold text-gray-800">Dashboard Utama</h1>
+        
+        {/* Filter Tanggal dengan Gaya Tombol */}
+        <div className="flex items-center bg-white p-1 rounded-lg shadow-sm border">
+          <button onClick={() => setDateRange('7d')} className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${dateRange === '7d' ? 'bg-indigo-600 text-white shadow' : 'text-gray-600 hover:bg-gray-100'}`}>7 Hari</button>
+          <button onClick={() => setDateRange('30d')} className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${dateRange === '30d' ? 'bg-indigo-600 text-white shadow' : 'text-gray-600 hover:bg-gray-100'}`}>30 Hari</button>
+          <button onClick={() => setDateRange('all')} className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${dateRange === 'all' ? 'bg-indigo-600 text-white shadow' : 'text-gray-600 hover:bg-gray-100'}`}>Semua</button>
         </div>
       </div>
 
-      {/* Grafik */}
-      <div className="px-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-        <div className="bg-white rounded-xl shadow p-6">
-          <Bar options={barOptions} data={barData} />
+      {/* Kartu Statistik Ringkas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="bg-white p-5 rounded-xl shadow">
+            <p className="text-sm text-gray-500">Pendapatan ({getFilterLabel()})</p>
+            <p className="text-2xl font-bold text-green-600">Rp {processedData.totalPendapatan.toLocaleString('id-ID')}</p>
         </div>
-        <div className="bg-white rounded-xl shadow p-6">
-          <Line options={lineOptions} data={lineData} />
+        <div className="bg-white p-5 rounded-xl shadow">
+            <p className="text-sm text-gray-500">Pesanan ({getFilterLabel()})</p>
+            <p className="text-2xl font-bold text-blue-600">{processedData.jumlahOrder}</p>
+        </div>
+        <div className="bg-white p-5 rounded-xl shadow">
+            <p className="text-sm text-gray-500">Total Pengguna</p>
+            <p className="text-2xl font-bold text-purple-600">{totalUser}</p>
         </div>
       </div>
-      <AnalyticsPieChart/>
+      
+      {/* Container Chart Layanan Populer */}
+      <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+          <h3 className="text-lg font-semibold mb-4 text-center">Layanan Populer ({getFilterLabel()})</h3>
+          <div className="w-full max-w-sm h-80">
+            <Pie data={pieData} options={{ responsive: true, maintainAspectRatio: false }} />
+          </div>
+      </div>
     </div>
-    
   );
 }

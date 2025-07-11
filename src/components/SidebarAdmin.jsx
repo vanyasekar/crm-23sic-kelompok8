@@ -17,7 +17,7 @@ const menuItems = [
   { name: 'Dashboard', icon: <LayoutDashboard />, path: '/admin/dashboard' },
   { name: 'Pesanan', icon: <GiClothes  />, path: '/admin/pesanan' },
   { name: 'Laporan', icon: <BarChart2 />, path: '/admin/laporan' },
-  { name: 'Delivery', icon: <ShoppingCart />, path: '/admin/delivery' }
+
 ]
 
 const accountItems = [

@@ -28,6 +28,18 @@ export default function Delivery() {
 
     fetchOrders();
   }, []);
+  
+  // Fungsi untuk memformat angka menjadi format Rupiah (Rp)
+  const formatCurrency = (number) => {
+    if (number === null || isNaN(number)) {
+      return "-"; // Tampilkan strip jika harga null atau bukan angka
+    }
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0, // Tidak menampilkan angka desimal
+    }).format(number);
+  };
 
   const batalkanPesanan = async (id) => {
     const { error } = await supabase
@@ -61,6 +73,8 @@ export default function Delivery() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Layanan</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Alamat</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Metode</th>
+              {/* --- TAMBAHKAN HEADER BARU UNTUK HARGA --- */}
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Harga</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Pembayaran</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
@@ -70,9 +84,18 @@ export default function Delivery() {
             {orders.map((order) => (
               <tr key={order.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 text-sm">{new Date(order.created_at).toLocaleDateString("id-ID")}</td>
-                <td className="px-6 py-4 text-sm">{order.layanan}</td>
+                <td className="px-6 py-4 text-sm">
+                   {/* Tampilkan layanan sebagai string yang dipisah koma */}
+                   {Array.isArray(order.layanan) ? order.layanan.join(", ") : order.layanan}
+                </td>
                 <td className="px-6 py-4 text-sm">{order.alamat}</td>
                 <td className="px-6 py-4 text-sm">{order.metode_pembayaran || "-"}</td>
+                
+                {/* --- TAMBAHKAN SEL BARU UNTUK MENAMPILKAN HARGA --- */}
+                <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    {formatCurrency(order.total_harga)}
+                </td>
+
                 <td className="px-6 py-4 text-sm">{order.status_pembayaran || "-"}</td>
                 <td className="px-6 py-4 text-sm">
                   <span className={`px-2 py-1 text-xs rounded-full ${
@@ -97,7 +120,8 @@ export default function Delivery() {
             ))}
             {orders.length === 0 && (
               <tr>
-                <td colSpan="7" className="px-6 py-4 text-center text-gray-500 text-sm">
+                {/* --- SESUAIKAN COLSPAN KARENA ADA TAMBAHAN 1 KOLOM --- */}
+                <td colSpan="8" className="px-6 py-4 text-center text-gray-500 text-sm">
                   Belum ada riwayat pemesanan.
                 </td>
               </tr>
